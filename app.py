@@ -1,11 +1,11 @@
 import time
+import logging
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_appbuilder import AppBuilder, SQLA
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder import ModelView
 from sqlalchemy.exc import OperationalError
-import logging
 
 app = Flask(__name__)
 
@@ -29,7 +29,7 @@ attempts = 5
 for i in range(attempts):
     try:
         with app.app_context():
-            db.create_all()  # Inicializa o banco de dados
+            db.create_all()  # Inicializa o banco de dados e cria tabelas
             # Criar um usuário administrador padrão
             if not appbuilder.sm.find_user(username='admin'):
                 appbuilder.sm.add_user(
@@ -52,6 +52,7 @@ for i in range(attempts):
 
 # Modelo de Aluno - Definição da tabela 'Aluno' no banco de dados
 class Aluno(db.Model):
+    __tablename__ = 'aluno'  # Definindo explicitamente o nome da tabela
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(50), nullable=False)
     sobrenome = db.Column(db.String(50), nullable=False)
