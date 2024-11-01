@@ -18,6 +18,17 @@ pipeline {
             }
         }
         
+        stage('Clean Up') {
+            steps {
+                script {
+                    // Para e remove containers antigos, evitando conflito de nomes
+                    dir('docker-project') {
+                        sh 'docker-compose down || true'
+                    }
+                }
+            }
+        }
+
         stage('Run Containers') {
             steps {
                 dir('docker-project') {
@@ -38,3 +49,4 @@ pipeline {
         }
     }
 }
+
