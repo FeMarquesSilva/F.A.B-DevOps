@@ -16,5 +16,15 @@ pipeline {
                 }
             }
         }
+
+        stage('Subir Contêiner') {
+            steps {
+                script {
+                    // Subir os contêineres
+                    sh 'docker-compose up -d'
+                }
+            }
+        }
+    }
+
    }
-}
