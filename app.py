@@ -83,11 +83,22 @@ def listar_alunos():
 @app.route('/aluno', methods=['POST'])
 def adicionar_aluno():
     data = request.get_json()
+
+    # Validação básica dos dados recebidos
+    if 'nome' not in data or 'sobrenome' not in data or 'turma' not in data or 'disciplinas' not in data:
+        return jsonify({'erro': 'Dados insuficientes para adicionar aluno.'}), 400
+
     novo_aluno = Aluno(nome=data['nome'], sobrenome=data['sobrenome'], turma=data['turma'], disciplinas=data['disciplinas'])
-    db.session.add(novo_aluno)
-    db.session.commit()
-    logger.info(f"Aluno {data['nome']} {data['sobrenome']} adicionado com sucesso!")
-    return jsonify({'message': 'Aluno adicionado com sucesso!'}), 201
+
+    try:
+        db.session.add(novo_aluno)
+        db.session.commit()
+        logger.info(f"Aluno {data['nome']} {data['sobrenome']} adicionado com sucesso!")
+        return jsonify({'message': 'Aluno adicionado com sucesso!'}), 201
+    except Exception as e:
+        db.session.rollback()  # Desfaz as alterações em caso de erro
+        logger.error(f"Erro ao adicionar aluno: {str(e)}")
+        return jsonify({'erro': 'Erro ao adicionar aluno. Tente novamente mais tarde.'}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
