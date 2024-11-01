@@ -1,11 +1,11 @@
-   pipeline {
+pipeline {
     agent any
     
     stages {
         stage('Checkout Code') {
             steps {
                 // Faz o checkout do código da branch main
-                git branch: 'main', url: 'https://github.com/FeMarquesSilva/F.A.B-DevOps.git'
+                git branch: 'main', url: 'https://github.com/FeMarquesSilva/F.A.B-DevOps'
             }
         }
         
@@ -35,6 +35,6 @@
                     // Aqui você pode adicionar um comando para verificar o status do container, se necessário
                 }
             }
-        }
-    }
+        }
+    }
 }
