@@ -23,6 +23,9 @@ pipeline {
                 script {
                     // Para e remove containers antigos, evitando conflito de nomes
                     dir('docker-project') {
+                        // Remover containers específicos, se já existirem, para evitar conflitos
+                        sh 'docker rm -f flask_app_container mariadb_container || true'
+                        // Remove redes e volumes associados, se existirem
                         sh 'docker-compose down || true'
                     }
                 }
@@ -49,4 +52,3 @@ pipeline {
         }
     }
 }
-
