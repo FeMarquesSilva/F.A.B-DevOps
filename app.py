@@ -1,4 +1,3 @@
-# Código principal do Flask (app.py)
 import time
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
@@ -14,7 +13,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'minha_chave_secreta_super_secreta'  # Substitua por uma chave segura
 
 # Configuração do banco de dados
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:root_password@mariadb/school_db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://flask_user:flask_password@mariadb/school_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Inicializar o banco de dados e o AppBuilder
@@ -83,6 +82,8 @@ def listar_alunos():
 @app.route('/alunos', methods=['POST'])
 def adicionar_aluno():
     data = request.get_json()
+    if not data or not all(key in data for key in ['nome', 'sobrenome', 'turma', 'disciplinas']):
+        return jsonify({'message': 'Dados inválidos!'}), 400  # Retorna erro se os dados não forem válidos
     novo_aluno = Aluno(nome=data['nome'], sobrenome=data['sobrenome'], turma=data['turma'], disciplinas=data['disciplinas'])
     db.session.add(novo_aluno)
     db.session.commit()

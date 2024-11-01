@@ -9,15 +9,6 @@ pipeline {
             }
         }
         
-        stage('Build Docker Images') {
-            steps {
-                dir('docker-project') {
-                    // Comando para construir as imagens dos containers
-                    sh 'docker-compose build'
-                }
-            }
-        }
-        
         stage('Clean Up') {
             steps {
                 script {
@@ -28,6 +19,15 @@ pipeline {
                         // Remove redes e volumes associados, se existirem
                         sh 'docker-compose down || true'
                     }
+                }
+            }
+        }
+
+        stage('Build Docker Images') {
+            steps {
+                dir('docker-project') {
+                    // Comando para construir as imagens dos containers
+                    sh 'docker-compose build'
                 }
             }
         }
