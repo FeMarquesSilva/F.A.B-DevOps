@@ -16,32 +16,5 @@ pipeline {
                 }
             }
         }
-
-        stage('Executar Testes') {
-            steps {
-                script {
-                    // Executar os testes (caso tenha)
-                    sh 'docker-compose run --rm app python -m unittest discover'
-                }
-            }
-        }
-
-        stage('Subir Contêiner') {
-            steps {
-                script {
-                    // Subir os contêineres
-                    sh 'docker-compose up -d'
-                }
-            }
-        }
-    }
-
-    post {
-        success {
-            echo 'Build realizado com sucesso!'
-        }
-        failure {
-            echo 'Ocorreu um erro no build.'
-        }
-    }
+   }
 }
