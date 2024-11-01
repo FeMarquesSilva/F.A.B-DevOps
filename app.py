@@ -80,7 +80,7 @@ def listar_alunos():
     return jsonify(output)
 
 # Rota para adicionar um aluno - Método POST
-@app.route('/aluno', methods=['POST'])
+@app.route('/aluno', methods=['GET'])
 def adicionar_aluno():
     data = request.get_json()
 
