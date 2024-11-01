@@ -1,11 +1,11 @@
 import time
-import logging
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_appbuilder import AppBuilder, SQLA
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder import ModelView
 from sqlalchemy.exc import OperationalError
+import logging
 
 app = Flask(__name__)
 
@@ -24,40 +24,30 @@ appbuilder = AppBuilder(app, db.session)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Tentar conectar até o MariaDB estar pronto
-attempts = 5
-for i in range(attempts):
-    try:
-        with app.app_context():
-            db.create_all()  # Inicializa o banco de dados e cria tabelas
-            # Criar um usuário administrador padrão
-            if not appbuilder.sm.find_user(username='admin'):
-                appbuilder.sm.add_user(
-                    username='admin',
-                    first_name='Admin',
-                    last_name='User',
-                    email='admin@admin.com',
-                    role=appbuilder.sm.find_role(appbuilder.sm.auth_role_admin),
-                    password='admin'
-                )
-        logger.info("Banco de dados inicializado com sucesso.")
-        break
-    except OperationalError:
-        if i < attempts - 1:
-            logger.warning("Tentativa de conexão com o banco de dados falhou. Tentando novamente em 5 segundos...")
-            time.sleep(5)  # Aguarda 5 segundos antes de tentar novamente
-        else:
-            logger.error("Não foi possível conectar ao banco de dados após várias tentativas.")
-            raise
-
 # Modelo de Aluno - Definição da tabela 'Aluno' no banco de dados
 class Aluno(db.Model):
-    __tablename__ = 'aluno'  # Definindo explicitamente o nome da tabela
+    __tablename__ = 'aluno'  # Adicione esta linha para garantir que o nome da tabela esteja definido
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(50), nullable=False)
     sobrenome = db.Column(db.String(50), nullable=False)
     turma = db.Column(db.String(50), nullable=False)
     disciplinas = db.Column(db.String(200), nullable=False)
+
+# Rota para inicializar o banco de dados e criar as tabelas
+@app.before_first_request
+def criar_tabelas():
+    db.create_all()  # Cria todas as tabelas
+    # Criar um usuário administrador padrão
+    if not appbuilder.sm.find_user(username='admin'):
+        appbuilder.sm.add_user(
+            username='admin',
+            first_name='Admin',
+            last_name='User',
+            email='admin@admin.com',
+            role=appbuilder.sm.find_role(appbuilder.sm.auth_role_admin),
+            password='admin'
+        )
+    logger.info("Banco de dados inicializado com sucesso.")
 
 # Visão do modelo Aluno para o painel administrativo
 class AlunoModelView(ModelView):
